@@ -69,6 +69,7 @@ static uint8_t h24_format = 1; // 24小时制标志
 
 static void get_holiday(void);
 
+extern int adv_state;
 /*
  * FUNCTION DEFINITIONS
  ****************************************************************************************
@@ -805,10 +806,15 @@ void QR_draw()
 	memset(fb_bw, 0xff, scr_h*line_bytes);
 	memset(fb_rr, 0x00, scr_h*line_bytes);	
 
-	draw_qr_code(20, 5, 3, QR_31x31);
+	draw_qr_code(5, 5, 3, QR_31x31);
+	draw_text(100, 5,"Bluetooth", BLACK);
+	draw_text(100, 20, "DLG-CLOCK ", BLACK);
+	draw_text(170,20,bt_id,BLACK);
+		
+	draw_text(110,40,"-------------",BLACK);
 	
-	draw_text(120, 5, "USE WEB", BLACK);
-	draw_text(120, 20, "Scan QR", BLACK);
+	draw_text(100, 60, "Scan the QR code", BLACK);
+	draw_text(100, 75, "with your browser", BLACK);
 	// 墨水屏更新显示
 	epd_init();
 	epd_screen_update();
@@ -828,7 +834,7 @@ void LB_draw()
 	memset(fb_bw, 0xff, scr_h*line_bytes);
 	memset(fb_rr, 0x00, scr_h*line_bytes);	
 
-	draw_qr_code(20, 10, 4, LB_31x31);
+	draw_qr_code(60, 10, 4, LB_31x31);
 
 	// 墨水屏更新显示
 	epd_init();

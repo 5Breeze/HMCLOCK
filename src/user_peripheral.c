@@ -51,7 +51,7 @@ int app_connection_idx                          __SECTION_ZERO("retention_mem_ar
 timer_hnd app_clock_timer_used                  __SECTION_ZERO("retention_mem_area0"); // 时钟定时器句柄，retention内存保存
 timer_hnd app_param_update_request_timer_used   __SECTION_ZERO("retention_mem_area0"); // 参数更新请求定时器句柄，retention内存保存
 
-static int adv_state;                          // 广播状态：0-未广播，1-正在广播
+int adv_state = 0;                          // 广播状态：0-未广播，1-正在广播
 static int otp_btaddr[2];                      // 从OTP读取的蓝牙地址
 static int otp_boot;                           // 从OTP读取的启动相关数据
 static char adv_name[20];                      // 广播名称缓冲区
@@ -268,8 +268,12 @@ static void app_clock_timer_cb(void)
     // 如果是快速更新，更新ADC数据,若电量不足则不继续执行任务
 	if(flags==4){
 		adc1_update();
+		//ADC电压小于2.6V
         if(adcval<1360){
+					//绘制低电量图标
             LB_draw();
+					//清除定时器唤醒任务
+					app_easy_timer_cancel(app_clock_timer_used);
             return;
         }
 	}
@@ -324,7 +328,8 @@ void user_app_on_db_init_complete( void )
 	clock_push();
 
 	// 绘制时钟（带蓝牙图标+全量更新）并启动广播
-	clock_draw(DRAW_BT|UPDATE_FULL);
+	//clock_draw(DRAW_BT|UPDATE_FULL);
+	QR_draw();
 	user_app_adv_start();
 
 	// 启动时钟定时器
@@ -419,6 +424,12 @@ void user_app_adv_undirect_complete(uint8_t status)
 	// 状态非0表示异常结束，更新广播状态并刷新屏幕
 	if(status!=0){
 		adv_state = 0;
+		//未进行初始化,则始终展示二维码
+    if(year==2025 && month<=5){
+        // 在2024年2月执行特定操作（占位符）
+        QR_draw();
+    }
+		else
 		clock_draw(UPDATE_FLY);
 	}
 }
@@ -449,6 +460,12 @@ void user_app_disconnect(struct gapc_disconnect_ind const *param)
 	if(param->reason!=CO_ERROR_REMOTE_USER_TERM_CON){
 		user_app_adv_start();
 	}else{
+		    //未进行初始化,则始终展示二维码
+    if(year==2025 && month<=5){
+        // 在2024年2月执行特定操作（占位符）
+        QR_draw();
+    }
+		else
 		clock_draw(UPDATE_FLY);
 	}
 

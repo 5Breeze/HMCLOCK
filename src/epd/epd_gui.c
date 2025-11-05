@@ -121,7 +121,7 @@ void draw_qr_code(
             int byte_idx = x / 8;       // 每4字节一行，8bit一个字节
             int bit_idx = 7 - (x % 8);  // 图像从高位到低位存储
             int bit = (img[y][byte_idx] >> bit_idx) & 1;
-            int color = (bit == 1) ? WHITE : BLACK;
+            int color = (bit == 0) ? WHITE : BLACK;
 
             // 放大绘制
             int x1 = start_x + x * pix_size;
