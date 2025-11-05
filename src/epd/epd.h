@@ -74,6 +74,13 @@ int fb_draw_font_info(int x, int y, const u8 *font_data, int color);
 int fb_draw_font(int x, int y, int ucs, int color);
 void fb_test(void);
 
+void draw_qr_code(
+    int start_x,
+    int start_y,
+    int pix_size,
+    const unsigned char img[31][4]
+);
+
 void select_layout(int xres, int yres);
 
 

@@ -14,7 +14,6 @@ int fb_h;
 u8 fb_bw[FB_SIZE];
 u8 fb_rr[FB_SIZE];
 
-
 /******************************************************************************/
 
 
@@ -98,6 +97,41 @@ void draw_box(int x1, int y1, int x2, int y2, int color)
 	for(y=y1; y<=y2; y++){
 		draw_hline(y, x1, x2, color);
 	}
+}
+
+
+
+/**
+ * 绘制二维码到墨水屏
+ *
+ * @param start_x   绘制起始X位置
+ * @param start_y   绘制起始Y位置
+ * @param pix_size  每个二维码像素点的宽高（单位像素）
+ * @param img       二维码C数组，尺寸31x4，每行4字节
+ */
+void draw_qr_code(
+    int start_x,
+    int start_y,
+    int pix_size,
+    const unsigned char img[31][4]
+) {
+    for (int y = 0; y < 31; y++) {
+        for (int x = 0; x < 31; x++) {
+
+            int byte_idx = x / 8;       // 每4字节一行，8bit一个字节
+            int bit_idx = 7 - (x % 8);  // 图像从高位到低位存储
+            int bit = (img[y][byte_idx] >> bit_idx) & 1;
+            int color = (bit == 1) ? WHITE : BLACK;
+
+            // 放大绘制
+            int x1 = start_x + x * pix_size;
+            int y1 = start_y + y * pix_size;
+            int x2 = x1 + pix_size - 1;
+            int y2 = y1 + pix_size - 1;
+
+            draw_box(x1, y1, x2, y2, color);
+        }
+    }
 }
 
 /******************************************************************************/
